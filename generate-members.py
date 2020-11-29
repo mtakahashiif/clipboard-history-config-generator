@@ -4,19 +4,18 @@ import jinja2
 import sys
 
 parser = argparse.ArgumentParser()
-parser.add_argument('input_file', nargs='?', type=argparse.FileType('r'), default=sys.stdin)
-parser.add_argument('output_file', nargs='?', type=argparse.FileType('w'), default=sys.stdout)
+parser.add_argument('input_file', nargs='?', type=argparse.FileType('r', encoding='utf-8'), default=sys.stdin)
+parser.add_argument('output_file', nargs='?', type=argparse.FileType('w', encoding='utf-8'), default=sys.stdout)
 args = parser.parse_args()
 
 index = {
-    'enabled': 0,
     'family-name': 1,
     'first-name': 2,
     'family-name-kana': 3,
     'first-name-kana': 4,
     'id': 5,
     'mail-address': 6,
-    'group': 8,
+    'group': 17,
 }
 
 members_by_group = {}
@@ -24,7 +23,7 @@ members_by_group = {}
 rows = csv.reader(args.input_file, delimiter='\t')
 for row in rows:
     member = {
-        'name': row[index['family-name']] + ' ' +  row[index['first-name']],
+        'name': row[index['family-name']] + ' ' + row[index['first-name']],
         'data': [
             row[index['family-name']],
             row[index['first-name']],
@@ -52,6 +51,7 @@ template = '''\
 ..
 {%- endfor %}
 '''
+
 
 env = jinja2.Environment(loader = jinja2.DictLoader({'template.txt.j2': template}))
 template = env.get_template('template.txt.j2')
